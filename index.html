@@ -1,119 +1,669 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>2SEC Burn Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2SEC • Time-Based Deflationary Burn</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #0d0d0d;
-            color: #e6e6e6;
-            margin: 0;
-            padding: 0;
-        }
+<style>
+    :root {
+        --bg: #050814;
+        --bg-alt: #070b18;
+        --card: #0b1020;
+        --accent: #00eaff;
+        --accent-soft: #00eaff33;
+        --accent-strong: #00c3ff;
+        --text-main: #f5f5f5;
+        --text-muted: #9ca3af;
+        --border-subtle: #1f2937;
+        --danger: #ff4b81;
+        --success: #4ade80;
+        --warning: #facc15;
+    }
 
-        header {
-            background: #111;
-            padding: 20px;
-            text-align: center;
-            border-bottom: 2px solid #333;
-        }
+    * {
+        box-sizing: border-box;
+    }
 
-        h1 {
-            margin: 0;
-            font-size: 32px;
-            color: #00eaff;
-        }
+    body {
+        margin: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: radial-gradient(circle at top, #111827 0, #020617 45%, #000 100%);
+        color: var(--text-main);
+    }
 
-        .section {
-            padding: 20px;
-            border-bottom: 1px solid #222;
-        }
+    a {
+        color: var(--accent);
+        text-decoration: none;
+    }
 
-        .metric-box {
-            background: #1a1a1a;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-            border: 1px solid #333;
-        }
+    a:hover {
+        text-decoration: underline;
+    }
 
-        #burn-log div {
-            background: #111;
-            padding: 8px;
-            margin: 5px 0;
-            border-left: 3px solid #00eaff;
+    header {
+        padding: 30px 16px 40px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    header::before {
+        content: "";
+        position: absolute;
+        inset: -40%;
+        background:
+            radial-gradient(circle at 10% 0, #00eaff22 0, transparent 55%),
+            radial-gradient(circle at 90% 0, #6366f122 0, transparent 55%);
+        opacity: 0.9;
+        pointer-events: none;
+    }
+
+    .hero-inner {
+        position: relative;
+        max-width: 1000px;
+        margin: 0 auto;
+        z-index: 1;
+    }
+
+    .hero-logo {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 2px solid var(--accent);
+        box-shadow: 0 0 25px var(--accent-soft);
+        margin-bottom: 12px;
+        background: radial-gradient(circle at 30% 20%, #ffffff55 0, transparent 45%), #020617;
+        object-fit: contain;
+    }
+
+    .hero-title {
+        font-size: 40px;
+        margin: 0;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .hero-subtitle {
+        margin-top: 10px;
+        font-size: 16px;
+        color: var(--text-muted);
+        max-width: 640px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-badges {
+        margin-top: 18px;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .badge {
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--accent-soft);
+        background: #020617aa;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-muted);
+    }
+
+    .hero-actions {
+        margin-top: 22px;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .btn {
+        padding: 10px 18px;
+        border-radius: 999px;
+        border: 1px solid var(--accent);
+        background: linear-gradient(135deg, #00eaff, #0066ff);
+        color: #000;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        box-shadow: 0 0 18px var(--accent-soft);
+    }
+
+    .btn.secondary {
+        background: transparent;
+        color: var(--accent);
+        border-color: var(--accent-soft);
+        box-shadow: none;
+    }
+
+    .btn:hover {
+        filter: brightness(1.05);
+    }
+
+    main {
+        max-width: 1100px;
+        margin: 0 auto 60px;
+        padding: 0 16px 40px;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: -20px;
+        margin-bottom: 30px;
+    }
+
+    @media (max-width: 900px) {
+        .grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
         }
-    </style>
+    }
+
+    @media (max-width: 600px) {
+        .grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .stat-card {
+        background: var(--card);
+        border-radius: 12px;
+        padding: 14px 14px 16px;
+        border: 1px solid var(--border-subtle);
+        box-shadow: 0 0 12px #000000aa;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at top, var(--accent-soft) 0, transparent 55%);
+        opacity: 0;
+        transition: opacity 0.25s ease-out;
+        pointer-events: none;
+    }
+
+    .stat-card:hover::before {
+        opacity: 0.4;
+    }
+
+    .stat-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--text-muted);
+    }
+
+    .stat-value {
+        margin-top: 6px;
+        font-size: 20px;
+        font-weight: 600;
+    }
+
+    .stat-tag {
+        margin-top: 6px;
+        font-size: 11px;
+        color: var(--text-muted);
+    }
+
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 9px;
+        border-radius: 999px;
+        font-size: 11px;
+        border: 1px solid var(--border-subtle);
+        background: #020617dd;
+        color: var(--text-muted);
+    }
+
+    .pill-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 8px var(--accent);
+    }
+
+    section {
+        margin-bottom: 32px;
+    }
+
+    section h2 {
+        font-size: 22px;
+        margin-bottom: 8px;
+    }
+
+    section p {
+        color: var(--text-muted);
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .card {
+        background: var(--card);
+        border-radius: 14px;
+        padding: 18px 18px 20px;
+        border: 1px solid var(--border-subtle);
+        box-shadow: 0 0 18px #000000aa;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .card::before {
+        content: "";
+        position: absolute;
+        inset: -40%;
+        background: radial-gradient(circle at top left, #00eaff11 0, transparent 55%);
+        opacity: 0.7;
+        pointer-events: none;
+    }
+
+    .burn-phases {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 14px;
+    }
+
+    @media (max-width: 800px) {
+        .burn-phases {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .phase-card {
+        background: #020617dd;
+        border-radius: 10px;
+        padding: 12px 12px 14px;
+        border: 1px solid #1f2937;
+    }
+
+    .phase-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .phase-tag {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+    }
+
+    .phase-metric {
+        font-size: 13px;
+        margin: 3px 0;
+    }
+
+    .phase-metric span {
+        color: var(--accent);
+        font-weight: 600;
+    }
+
+    .timeline {
+        margin-top: 16px;
+        border-left: 2px solid #1f2937;
+        padding-left: 14px;
+    }
+
+    .timeline-item {
+        margin-bottom: 10px;
+        position: relative;
+    }
+
+    .timeline-item::before {
+        content: "";
+        position: absolute;
+        left: -15px;
+        top: 4px;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 10px var(--accent-soft);
+    }
+
+    .timeline-label {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-muted);
+    }
+
+    .timeline-text {
+        font-size: 13px;
+    }
+
+    #burn-log {
+        margin-top: 10px;
+        max-height: 360px;
+        overflow-y: auto;
+        padding-right: 4px;
+    }
+
+    #burn-log div {
+        background: #020617;
+        padding: 8px 10px;
+        margin: 5px 0;
+        border-radius: 6px;
+        border-left: 3px solid var(--accent);
+        font-size: 12px;
+        color: #e5e7eb;
+    }
+
+    #burn-log div:nth-child(odd) {
+        background: #020617dd;
+    }
+
+    .footer {
+        text-align: center;
+        padding: 18px 10px 26px;
+        font-size: 12px;
+        color: var(--text-muted);
+        border-top: 1px solid #020617;
+        background: #020617;
+    }
+
+    .progress-container {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 10px;
+        padding: 12px;
+        margin-top: 14px;
+    }
+
+    .progress-bar {
+        height: 16px;
+        background: #1f2937;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-top: 6px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #00eaff, #0066ff);
+        transition: width 1s ease-out;
+    }
+
+    .chart-container {
+        margin-top: 20px;
+        background: #0b1020;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        padding: 14px;
+    }
+
+    svg {
+        width: 100%;
+        height: 200px;
+    }
+</style>
 </head>
 
 <body>
 
 <header>
-    <h1>2SEC Burn Dashboard</h1>
-    <p>Live Supply • Burned Tokens • Vault Balance • Burn Log</p>
+    <div class="hero-inner">
+        <img src="logo.png" alt="2SEC Logo" class="hero-logo">
+        <h1 class="hero-title">2SEC</h1>
+        <p class="hero-subtitle">
+            Time‑based, deflationary Sui token with a transparent, on‑chain burn vault and a hard‑coded 10‑year schedule.
+        </p>
+
+        <div class="hero-badges">
+            <div class="badge">1,000,000,000 SEC2 • Fixed Supply</div>
+            <div class="badge">Boost Phase: 15 SEC2 / sec</div>
+            <div class="badge">Normal Phase: 2 SEC2 / sec</div>
+        </div>
+
+        <div class="hero-actions">
+            <a class="btn" href="https://suiscan.xyz/mainnet/coin/0xf7323565fb71c360edc39a93b2524f88997a87f2d396c693dbf8185151fb8bce::sec2::SEC2" target="_blank">
+                View Contract on SuiScan
+            </a>
+            <a class="btn secondary" href="https://github.com/2SECSUI/TwoSecondBurn-Time-based-deflation" target="_blank">
+                View Code on GitHub
+            </a>
+        </div>
+    </div>
 </header>
 
-<div class="section">
-    <h2>Live Token Metrics</h2>
+<main>
 
-    <div class="metric-box">
-        <strong>Total Supply:</strong> <span id="total-supply">Loading...</span>
+    <!-- Top stats grid -->
+    <div class="grid">
+        <div class="stat-card">
+            <div class="stat-label">Total Supply</div>
+            <div class="stat-value">1,000,000,000 SEC2</div>
+            <div class="stat-tag">Hard‑coded at launch • No further minting</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Burned (Vault Balance)</div>
+            <div class="stat-value" id="vault-balance">Loading...</div>
+            <div class="stat-tag">
+                <span class="pill">
+                    <span class="pill-dot"></span>
+                    Live from on‑chain burn vault
+                </span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Circulating Supply</div>
+            <div class="stat-value" id="current-supply">Loading...</div>
+            <div class="stat-tag">Total supply minus vault balance</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Theoretical 10‑Year Burn</div>
+            <div class="stat-value" id="total-theoretical">Loading...</div>
+            <div class="stat-tag">Based on 200‑day boost + 2 SEC2/sec thereafter</div>
+        </div>
     </div>
 
-    <div class="metric-box">
-        <strong>Current Supply:</strong> <span id="current-supply">Loading...</span>
-    </div>
+    <!-- Burn mechanics -->
+    <section>
+        <div class="card">
+            <h2>Burn Mechanics</h2>
+            <p>
+                2SEC uses a shared burn vault that continuously destroys tokens over time. The vault is initialized once,
+                then any caller can trigger the <code>interact</code> function to advance the schedule, burn tokens, and
+                update the on‑chain state. No admin keys, no hidden mint—just a transparent, time‑based deflation curve.
+            </p>
 
-    <div class="metric-box">
-        <strong>Burned Tokens:</strong> <span id="burned-tokens">Loading...</span>
-    </div>
+            <div class="burn-phases">
+                <div class="phase-card">
+                    <div class="phase-title">Phase 1 • Boost (Days 0–200)</div>
+                    <div class="phase-tag">High‑intensity burn to front‑load deflation</div>
+                    <div class="phase-metric">Rate: <span>15 SEC2 / second</span></div>
+                    <div class="phase-metric">Duration: <span>200 days</span></div>
+                    <div class="phase-metric">Total burned in phase: <span id="phase1-burn">Loading...</span></div>
+                </div>
 
-    <div class="metric-box">
-        <strong>Vault Balance:</strong> <span id="vault-balance">Loading...</span>
-    </div>
-</div>
+                <div class="phase-card">
+                    <div class="phase-title">Phase 2 • Normal (Day 201–Year 10)</div>
+                    <div class="phase-tag">Long‑tail burn to complete the schedule</div>
+                    <div class="phase-metric">Rate: <span>2 SEC2 / second</span></div>
+                    <div class="phase-metric">Duration: <span>up to 10 years total</span></div>
+                    <div class="phase-metric">Total burned in phase: <span id="phase2-burn">Loading...</span></div>
+                </div>
+            </div>
 
-<div class="section">
-    <h2>Burn Log</h2>
-    <div id="burn-log">
-        <!-- Your PowerShell script will inject entries here -->
-    </div>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-label">T0 • Vault Initialization</div>
+                    <div class="timeline-text">
+                        The burn vault is created and funded with a large internal pool of SEC2. The clock starts when
+                        <code>interact</code> is first called and the vault is marked initialized.
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-label">T0 → T+200 days • Boost</div>
+                    <div class="timeline-text">
+                        For the first 200 days, the vault burns at 15 SEC2 per second. Anyone can call
+                        <code>interact</code> to realize the accumulated burn and update the on‑chain state.
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-label">T+200 days → T+10 years • Normal</div>
+                    <div class="timeline-text">
+                        After the boost window, the burn rate drops to 2 SEC2 per second and continues until the
+                        10‑year mark, or until the internal pool is exhausted.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Burn schedule progress -->
+    <section>
+        <div class="card">
+            <h2>Burn Schedule Progress</h2>
+            <p>The percentage of the 10‑year burn schedule completed so far.</p>
+
+            <div class="progress-container">
+                <div><strong id="progress-label">Loading...</strong></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Burn chart -->
+    <section>
+        <div class="card">
+            <h2>Burn Chart (Based on Log)</h2>
+            <p>A simple visual of burn amounts over time using your burn log entries.</p>
+
+            <div class="chart-container">
+                <svg id="burn-chart"></svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- Burn log -->
+    <section>
+        <div class="card">
+            <h2>Burn Log (On‑Chain Events)</h2>
+            <p>
+                This log is generated off‑chain by a monitoring script that calls <code>interact</code>, verifies the math,
+                and appends each burn cycle here. Entries are committed to GitHub and deployed via GitHub Pages for
+                a fully auditable history.
+            </p>
+            <div id="burn-log">
+                <!-- Your PowerShell script appends <div> entries here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Contract details -->
+    <section>
+        <div class="card">
+            <h2>Contract & Metadata</h2>
+            <p>
+                <strong>Module:</strong>
+                <code>0xf7323565fb71c360edc39a93b2524f88997a87f2d396c693dbf8185151fb8bce::sec2</code><br>
+                <strong>Coin Type:</strong>
+                <code>SEC2</code><br>
+            </p>
+            <p>
+                <a href="https://suiscan.xyz/mainnet/coin/0xf7323565fb71c360edc39a93b2524f88997a87f2d396c693dbf8185151fb8bce::sec2::SEC2" target="_blank">
+                    View SEC2 on SuiScan
+                </a>
+                &nbsp;•&nbsp;
+                <a href="https://github.com/2SECSUI/TwoSecondBurn-Time-based-deflation" target="_blank">
+                    View repository on GitHub
+                </a>
+            </p>
+        </div>
+    </section>
+
+</main>
+
+<div class="footer">
+    2SEC • Time‑based deflationary token on Sui • All burns verifiable on‑chain.
 </div>
 
 <script>
     const RPC = "https://fullnode.mainnet.sui.io:443";
-    const COIN_TYPE = "0xf7323565fb71c360edc39a93b2524f88997a87f2d396c693dbf8185151fb8bce::sec2::SEC2";
     const VAULT_ID = "0x02edb12e7affd2ef0e77788ff6596ac854ec9a91645479acca78baad177e589a";
+    const DECIMALS = 1_000_000_000;
+    const TOTAL_SUPPLY = 1_000_000_000;
 
-    async function fetchSupply() {
-        try {
-            const res = await fetch(RPC, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    jsonrpc: "2.0",
-                    id: 1,
-                    method: "suix_getTotalSupply",
-                    params: [COIN_TYPE]
-                })
-            });
+    function calculateBurnSchedule() {
+        const secondsPerDay = 86400;
 
-            const data = await res.json();
-            const total = Number(data.result.value) / 1_000_000_000;
+        const phase1 = 200 * secondsPerDay * 15;
+        const totalDays10Years = 3650;
+        const phase2Days = totalDays10Years - 200;
+        const phase2 = phase2Days * secondsPerDay * 2;
 
-            document.getElementById("total-supply").textContent = total.toLocaleString();
+        document.getElementById("phase1-burn").textContent = phase1.toLocaleString() + " SEC2";
+        document.getElementById("phase2-burn").textContent = phase2.toLocaleString() + " SEC2";
+        document.getElementById("total-theoretical").textContent =
+            (phase1 + phase2).toLocaleString() + " SEC2";
 
-            return total;
-        } catch (e) {
-            document.getElementById("total-supply").textContent = "Error";
-            return 0;
-        }
+        return { phase1, phase2, total: phase1 + phase2 };
     }
 
-    async function fetchVaultBalance() {
+    function updateProgressBar(vaultBalance, theoreticalTotal) {
+        const percent = Math.min((vaultBalance / theoreticalTotal) * 100, 100);
+
+        document.getElementById("progress-label").textContent =
+            percent.toFixed(2) + "% of schedule completed";
+
+        document.getElementById("progress-fill").style.width = percent + "%";
+    }
+
+    function drawBurnChart() {
+        const logDiv = document.getElementById("burn-log");
+        const entries = [...logDiv.querySelectorAll("div")];
+
+        if (entries.length === 0) return;
+
+        const burns = entries.map(e => {
+            const match = e.textContent.match(/Burned:\s*(-?\d+)/);
+            return match ? parseInt(match[1]) : 0;
+        });
+
+        const svg = document.getElementById("burn-chart");
+        svg.innerHTML = "";
+
+        const width = svg.clientWidth || 400;
+        const height = svg.clientHeight || 200;
+
+        const maxBurn = Math.max(...burns, 1);
+        const step = burns.length > 1 ? width / (burns.length - 1) : width;
+
+        let path = "M 0 " + (height - (burns[0] / maxBurn) * height);
+
+        burns.forEach((b, i) => {
+            const x = i * step;
+            const y = height - (b / maxBurn) * height;
+            path += ` L ${x} ${y}`;
+        });
+
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        line.setAttribute("d", path);
+        line.setAttribute("stroke", "#00eaff");
+        line.setAttribute("stroke-width", "2");
+        line.setAttribute("fill", "none");
+
+        svg.appendChild(line);
+    }
+
+    async function fetchVaultBalance(theoreticalTotal) {
         try {
             const res = await fetch(RPC, {
                 method: "POST",
@@ -127,31 +677,28 @@
             });
 
             const data = await res.json();
-            const raw = Number(data.result.data.content.fields.internal_pool);
-            const tokens = raw / 1_000_000_000;
+            const raw = Number(data?.result?.data?.content?.fields?.internal_pool ?? 0);
+            const tokens = raw / DECIMALS;
 
-            document.getElementById("vault-balance").textContent = tokens.toLocaleString();
+            document.getElementById("vault-balance").textContent =
+                tokens.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " SEC2";
 
-            return tokens;
+            const circulating = TOTAL_SUPPLY - tokens;
+            document.getElementById("current-supply").textContent =
+                circulating.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " SEC2";
+
+            updateProgressBar(tokens, theoreticalTotal);
+            drawBurnChart();
+
         } catch (e) {
             document.getElementById("vault-balance").textContent = "Error";
-            return 0;
+            document.getElementById("current-supply").textContent = "Error";
         }
     }
 
-    async function updateMetrics() {
-        const total = await fetchSupply();
-        const vault = await fetchVaultBalance();
-
-        const currentSupply = total - vault;
-        const burned = vault; // Vault holds burned tokens
-
-        document.getElementById("current-supply").textContent = currentSupply.toLocaleString();
-        document.getElementById("burned-tokens").textContent = burned.toLocaleString();
-    }
-
-    updateMetrics();
-    setInterval(updateMetrics, 15000);
+    const schedule = calculateBurnSchedule();
+    fetchVaultBalance(schedule.total);
+    setInterval(() => fetchVaultBalance(schedule.total), 15000);
 </script>
 
 </body>
