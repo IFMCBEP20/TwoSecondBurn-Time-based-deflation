@@ -1057,3 +1057,4 @@
 2026-01-22 17:05:36 | Before: 842518690 | After: 842513965 | Burned: 4725 | Expected: 4725
 2026-01-22 17:10:50 | Before: 842513965 | After: 842509240 | Burned: 4725 | Expected: 4725
 2026-01-22 17:16:06 | Before: 842509240 | After: 842504500 | Burned: 4740 | Expected: 4740
+2026-01-22 17:21:23 | Before: 842504500 | After: 842499760 | Burned: 4740 | Expected: 4740
