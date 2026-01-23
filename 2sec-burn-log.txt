@@ -1321,3 +1321,4 @@
 2026-01-23 16:12:52 | Before: 841270150 | After: 841265425 | Burned: 4725 | Expected: 4725
 2026-01-23 16:18:08 | Before: 841265425 | After: 841260700 | Burned: 4725 | Expected: 4725
 2026-01-23 16:23:23 | Before: 841260700 | After: 841255960 | Burned: 4740 | Expected: 4740
+2026-01-23 16:28:38 | Before: 841255960 | After: 841251235 | Burned: 4725 | Expected: 4725
