@@ -4067,3 +4067,4 @@
 2026-02-02 17:13:12 | Before: 828255850 | After: 828251125 | Burned: 4725 | Expected: 4725
 2026-02-02 17:18:27 | Before: 828251125 | After: 828246400 | Burned: 4725 | Expected: 4725
 2026-02-02 17:23:42 | Before: 828246400 | After: 828241675 | Burned: 4725 | Expected: 4725
+2026-02-02 17:28:57 | Before: 828241675 | After: 828236935 | Burned: 4740 | Expected: 4740
