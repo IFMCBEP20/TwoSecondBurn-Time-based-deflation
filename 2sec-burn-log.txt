@@ -5234,3 +5234,4 @@
 2026-02-07 16:13:24 | Before: 821829790 | After: 821829790 | Burned: 0 | Expected: 0
 2026-02-07 16:19:02 | Before: 821825005 | After: 821825005 | Burned: 0 | Expected: 0
 2026-02-07 16:24:17 | Before: 821820220 | After: 821815135 | Burned: 5085 | Expected: 5085
+2026-02-07 16:29:34 | Before: 821815135 | After: 821810395 | Burned: 4740 | Expected: 4740
